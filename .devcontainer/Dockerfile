@@ -16,6 +16,7 @@ RUN apt-get update \
     openssl \
     imagemagick \
     libvips \
+    libyaml-dev \
     tzdata \
  && rm -rf /var/lib/apt/lists/*
 

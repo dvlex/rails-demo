@@ -1,77 +1,24 @@
-# Ruby on Rails Dev Container Template
+# README
 
-This repository provides a **VS Code Dev Container** setup for rapid Ruby on Rails development using Docker Compose. It includes a ready-to-use Ruby/Rails environment and a PostgreSQL database, plus a modern shell experience with Zsh and plugins.
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-## Features
+Things you may want to cover:
 
-- **VS Code Dev Containers**: Seamless development with [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers).
-- **Docker Compose**: Spins up both a Ruby/Rails development container and a PostgreSQL database container.
-- **Zsh & Plugins**: Enjoy Zsh with [Oh My Zsh](https://ohmyz.sh/), syntax highlighting, and autosuggestions.
-- **No Rails Project Included**: Start your Rails app from scratch, choosing only the tools you need.
+* Ruby version
 
-## Rails Tools You Can Select When Creating a New App
+* System dependencies
 
-When you run `rails new`, you can choose to include or skip various tools and frameworks, such as:
+* Configuration
 
-- **Tailwind CSS** (`--css tailwind`)
-- **Bootstrap** (`--css bootstrap`)
-- **Sass** (`--css sass`)
-- **Stimulus** (`--javascript esbuild` or `--javascript importmap`)
-- **Hotwire** (Turbo & Stimulus, enabled by default)
-- **RSpec** (add manually or via template)
-- **Minitest** (default)
-- **Webpack** (legacy, not recommended for new apps)
-- **Action Mailbox**
-- **Action Text**
-- **Active Storage**
-- **System Tests**
-- **API-only mode** (`--api`)
-- **Skip Active Record** (`--skip-active-record`)
-- **Skip Test** (`--skip-test`)
-- **Skip Hotwire** (`--skip-hotwire`)
+* Database creation
 
-## Basic Rails CLI Commands
+* Database initialization
 
-- `rails new <app_name> [options]` — Create a new Rails app
-- `rails server` — Start the Rails development server
-- `rails console` — Open the Rails console
-- `rails db:create` — Create the database
-- `rails db:migrate` — Run database migrations
-- `rails generate <generator>` — Generate code (models, controllers, etc.)
-- `rails test` or `rspec` — Run tests
+* How to run the test suite
 
-## Recommended Command to Start a New Rails App (with PostgreSQL & Tailwind)
+* Services (job queues, cache servers, search engines, etc.)
 
-Inside the dev container terminal, run:
+* Deployment instructions
 
-```sh
-rails new myapp --database=postgresql --css=tailwind
-```
-
-This will:
-
-- Create a new Rails app in the `myapp` directory
-- Configure it to use PostgreSQL as the database
-- Set up Tailwind CSS for styling
-
-## Getting Started
-
-1. **Open in VS Code**
-   Use "Open Folder in Container" or the "Reopen in Container" prompt.
-
-2. **Start Services**
-   Docker Compose will automatically start both the Rails and PostgreSQL containers.
-
-3. **Create Your Rails App**
-   Open a terminal in VS Code and run the recommended `rails new` command above.
-
-4. **Configure Database**
-   Update your `config/database.yml` if needed to match the PostgreSQL service settings.
-
-5. **Enjoy Zsh**
-   The terminal uses Zsh with plugins for a modern shell experience.
-
----
-
-**Tip:**
-You can customize your Rails app with additional options as needed. See `rails new --help` for more.
+* ...

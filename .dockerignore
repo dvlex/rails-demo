@@ -1,54 +1,51 @@
-# Ignore version control files:
-.git/
-.gitignore
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
 
-# Ignore github templates:
-.github/
+# Ignore git directory.
+/.git/
+/.gitignore
 
-# Ignore docker and environment files:
-*Dockerfile
-docker-compose*.yml
-**/*.env
-.dockerignore
+# Ignore bundler config.
+/.bundle
 
-# Ignore log files:
-log/*.log
+# Ignore all environment files.
+/.env*
 
-# Ignore temporary files:
-tmp/
-!tmp/pids/.keep
-
-# Ignore master key for decrypting credentials and more.
+# Ignore all default key files.
 /config/master.key
+/config/credentials/*.key
 
-# Ignore OS artifacts:
-**/.DS_Store
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
 
-# Ignore database dumps:
-db/dumps/*
-!db/dumps/.keep
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/.keep
 
-# Ignore bash / IRB / Byebug history files
-.*_hist*
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
 
+# Ignore assets.
+/node_modules/
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets
 
-# Ignore downloadable configuration files (i.e. RuboCop):
-.rubocop-*
-.codeclimate.yml
-.csslintrc
-.eslintignore
-.eslintrc
-.reek.yml
+# Ignore CI service files.
+/.github
 
-# Ignore test coverage reports:
-coverage/*
+# Ignore Kamal files.
+/config/deploy*.yml
+/.kamal
 
-# Ignore RSpec state:
-spec/examples.txt
+# Ignore development files
+/.devcontainer
 
-# Ignore dotenv files
-**/*.env
-!**/*example*.env
-
-# Ignore test coverage reports:
-coverage/
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
