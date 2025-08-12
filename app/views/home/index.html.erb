@@ -1,0 +1,14 @@
+<div>
+  <h1 class="text-4xl font-bold text-center mb-8">
+    Portfolio Lexdrel
+  </h1>
+  <p>List of demo strings</p>
+
+  <ul class="list-disc list-inside text-lg">
+    <% @demos.each do |demo| %>
+      <li class="ml-4">
+        <%= demo.title %>
+      </li>
+    <% end %>
+  </ul>
+</div>

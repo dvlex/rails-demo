@@ -21,7 +21,7 @@ default: &default
   username: <%= ENV['ENV_USERNAME'] %>
   password: <%= ENV['ENV_PASSWORD'] %>
   host: <%= ENV['ENV_HOST'] %>
-  post: 5432
+  port: 5432
 
 
 development:
