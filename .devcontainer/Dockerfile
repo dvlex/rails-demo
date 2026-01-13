@@ -12,7 +12,8 @@ RUN apt-get update \
     sudo \
     build-essential \
     git \
-    libpq5 \
+    libpq-dev \
+    pkg-config \
     openssl \
     imagemagick \
     libvips \
