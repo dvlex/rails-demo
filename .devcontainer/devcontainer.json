@@ -25,7 +25,8 @@
 				"GitHub.copilot",
 				"GitHub.copilot-chat",
 				"aliariff.vscode-erb-beautify",
-				"ninoseki.vscode-gem-lens"
+				"ninoseki.vscode-gem-lens",
+				"ninoseki.vscode-mogami"
 			]
 		}
 	}
