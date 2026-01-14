@@ -1,43 +1,53 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build --platform=linux/amd64 . -t lexdrel/rails-demo
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name rails_demo rails_demo
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.5
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM ruby:${RUBY_VERSION}-alpine AS base
 
-# Rails app lives here
 WORKDIR /rails
 
-# Install base packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Install base packages for Alpine:
+# tzdata: needed for TZInfo
+# jemalloc: memory optimization
+# gcompat: shim for glibc binaries (needed for precompiled gems/binaries)
+# libpq: PostgreSQL runtime library
+RUN apk add --no-cache \
+    gcompat \
+    jemalloc \
+    libpq \
+    tzdata
 
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development" \
+    # Improve performance with jemalloc and YJIT \
+    LD_PRELOAD="/usr/lib/libjemalloc.so.2" \
+    MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true" \
+    RUBY_YJIT_ENABLE="1"
 
-# Throw-away build stage to reduce size of final image
 FROM base AS build
 
 # Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+RUN apk add --no-cache \
+    build-base \
+    git \
+    pkgconf \
+    postgresql-dev \
+    yaml-dev
 
-# Install application gems
+# Install application gems with rigorous cleanup
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN --mount=type=cache,target=/usr/local/bundle/cache \
+    bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+    bundle exec bootsnap precompile --gemfile && \
+    # Remove unneeded files (test files, C source files, leftovers)
+    rm -rf "${BUNDLE_PATH}"/ruby/*/gems/*/test && \
+    rm -rf "${BUNDLE_PATH}"/ruby/*/gems/*/spec && \
+    rm -rf "${BUNDLE_PATH}"/ruby/*/extensions/*/*/*.c && \
+    rm -rf "${BUNDLE_PATH}"/ruby/*/extensions/*/*/*.o
 
 # Copy application code
 COPY . .
@@ -46,10 +56,9 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
-
-
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
+    # Cleanup compiled assets source (optional, but saves space)
+    rm -rf node_modules
 
 # Final stage for app image
 FROM base
@@ -58,10 +67,11 @@ FROM base
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+# Create a non-root user
+RUN addgroup -S -g 1000 rails && \
+    adduser -S -u 1000 -G rails -s /bin/sh rails && \
     chown -R rails:rails db log storage tmp
+
 USER 1000:1000
 
 # Entrypoint prepares the database.
@@ -69,4 +79,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["./bin/thrust", "bundle", "exec", "puma", "-C", "config/puma.rb"]
