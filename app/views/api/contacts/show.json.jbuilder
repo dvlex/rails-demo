@@ -1,1 +1,1 @@
-json.partial! "contacts/contact", contact: @contact
+json.partial! "api/contacts/contact", contact: @contact
