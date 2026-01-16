@@ -18,5 +18,7 @@ Rails.application.routes.draw do
   # Rutas API (JSON)
   namespace :api, defaults: { format: :json } do
     resources :contacts
+
+    match "*unmatched", to: "errors#route_not_found", via: :all
   end
 end
