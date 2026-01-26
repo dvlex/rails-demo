@@ -23,8 +23,34 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="grid grid-rows-[auto_1fr] min-h-screen bg-gray-50">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="container mx-auto px-5 py-4 flex justify-between items-center">
+        <%= link_to "Rails Demo", root_path, class: "text-xl font-bold text-gray-900" %>
+
+        <div class="flex items-center gap-4">
+          <% if user_signed_in? %>
+            <span class="text-gray-600"><%= current_user.email %></span>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition duration-150" %>
+          <% else %>
+            <%= link_to "Sign in", new_user_session_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition duration-150" %>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container mx-auto mt-10 px-5">
+      <% if notice %>
+        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+          <%= notice %>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+          <%= alert %>
+        </div>
+      <% end %>
+
       <%= yield %>
     </main>
   </body>
