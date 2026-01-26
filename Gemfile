@@ -69,3 +69,9 @@ group :test do
 end
 
 gem "rack-cors", "~> 3.0"
+
+gem "devise", "~> 5.0"
+gem "omniauth-rails_csrf_protection", "~> 2.0"
+gem "devise-jwt", "~> 0.13.0"
+
+gem "omniauth-linkedin-openid", "~> 1.0"

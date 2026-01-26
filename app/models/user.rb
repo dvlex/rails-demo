@@ -1,0 +1,18 @@
+class User < ApplicationRecord
+  include Devise::JWT::RevocationStrategies::JTIMatcher
+
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, :jwt_authenticatable,
+         omniauth_providers: %i[linkedin],
+         jwt_revocation_strategy: self
+
+  def self.from_omniauth(auth)
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.email = auth.info.email
+      user.password = Devise.friendly_token[0, 20]
+    end
+  end
+end
