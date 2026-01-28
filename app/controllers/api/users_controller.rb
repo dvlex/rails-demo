@@ -1,10 +1,9 @@
 module Api
-  class UsersController < ApplicationController
-    skip_before_action :verify_authenticity_token
+  class UsersController < ApplicationApiController
     before_action :authenticate_user!
 
     def show
-      render json: current_user
+      render json: UserBlueprint.render(current_user)
     end
   end
 end
