@@ -20,7 +20,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
       post tasks_url, params: { task: { completed: @task.completed, name: @task.name } }
     end
 
-    assert_redirected_to task_url(Task.last)
+    assert_redirected_to tasks_url
   end
 
   test "should show task" do
@@ -35,14 +35,15 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "should update task" do
     patch task_url(@task), params: { task: { completed: @task.completed, name: @task.name } }
-    assert_redirected_to task_url(@task)
+    assert_redirected_to tasks_url
   end
 
-  test "should destroy task" do
-    assert_difference("Task.count", -1) do
+  test "should toggle task completion on destroy" do
+    assert_no_difference("Task.count") do
       delete task_url(@task)
     end
 
     assert_redirected_to tasks_url
+    assert @task.reload.completed?
   end
 end
