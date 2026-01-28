@@ -1,6 +1,5 @@
 module Api
-  class TestController < ApplicationController
-    skip_before_action :verify_authenticity_token
+  class TestController < ApplicationApiController
     before_action :authenticate_user!
 
     def index
