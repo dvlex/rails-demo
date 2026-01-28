@@ -5,9 +5,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     driver_option.add_argument("--no-sandbox")
     driver_option.add_argument("--disable-dev-shm-usage")
     chrome_bin = ENV["CHROME_BIN"]
-    if chrome_bin && File.exist?(chrome_bin)
-      driver_option.binary = chrome_bin
-    else
+    if chrome_bin
+      if File.exist?(chrome_bin)
+        driver_option.binary = chrome_bin
+      else
+        warn "CHROME_BIN is set to #{chrome_bin}, but the file does not exist."
+      end
+    end
+    unless driver_option.binary
       [
         "/usr/bin/google-chrome-stable",
         "/usr/bin/google-chrome",
