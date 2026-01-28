@@ -93,7 +93,7 @@ jobs:
 
       - name: Run tests
         env:
-          CHROME_BIN: /usr/bin/chromium
+          CHROME_BIN: /snap/bin/chromium
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
