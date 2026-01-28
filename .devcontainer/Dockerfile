@@ -19,6 +19,8 @@ RUN apt-get update \
     libvips \
     libyaml-dev \
     tzdata \
+    chromium \
+    chromium-driver \
  && rm -rf /var/lib/apt/lists/*
 
 # Receive the developer user's UID and USER:

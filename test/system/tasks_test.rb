@@ -7,7 +7,7 @@ class TasksTest < ApplicationSystemTestCase
 
   test "visiting the index" do
     visit tasks_url
-    assert_selector "h1", text: "Tasks"
+    assert_selector "h1", text: "To Do"
   end
 
   test "should create task" do
