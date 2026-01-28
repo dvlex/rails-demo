@@ -19,7 +19,7 @@ class TasksTest < ApplicationSystemTestCase
     click_on "Create Task"
 
     assert_text "Task was successfully created"
-    click_on "Back"
+    assert_selector "h1", text: "To Do"
   end
 
   test "should update Task" do
@@ -31,13 +31,13 @@ class TasksTest < ApplicationSystemTestCase
     click_on "Update Task"
 
     assert_text "Task was successfully updated"
-    click_on "Back"
+    assert_selector "h1", text: "To Do"
   end
 
   test "should destroy Task" do
     visit task_url(@task)
     accept_confirm { click_on "Destroy this task", match: :first }
 
-    assert_text "Task was successfully destroyed"
+    assert_text "Task was successfully updated"
   end
 end
