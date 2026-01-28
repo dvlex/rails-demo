@@ -18,7 +18,7 @@ class User < ApplicationRecord
       user.title = auth.info.description
       user.photo_url = auth.info.picture_url
       user.location = auth.info.location
-      user.linkedinurl = auth.info.urls&.dig("public_profile")
+      user.linkedin_url = auth.info.urls&.dig("public_profile")
     end
   end
 end

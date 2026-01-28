@@ -28,7 +28,7 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Software Engineer", user.title
     assert_equal "http://example.com/photo.jpg", user.photo_url
     assert_equal "New York, NY", user.location
-    assert_equal "http://linkedin.com/in/johndoe", user.linkedinurl
+    assert_equal "http://linkedin.com/in/johndoe", user.linkedin_url
     assert_equal "linkedin", user.provider
     assert_equal "123456", user.uid
 
