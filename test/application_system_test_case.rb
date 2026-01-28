@@ -4,8 +4,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ] do |driver_option|
     driver_option.add_argument("--no-sandbox")
     driver_option.add_argument("--disable-dev-shm-usage")
-    chrome_bin = ENV["CHROME_BIN"]&.strip
-    chrome_bin = nil if chrome_bin&.empty?
+    chrome_bin = ENV["CHROME_BIN"].to_s.strip.presence
     selected_binary = nil
     if chrome_bin
       if File.exist?(chrome_bin)
