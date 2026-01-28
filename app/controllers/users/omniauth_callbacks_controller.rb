@@ -1,7 +1,7 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def linkedin
     auth = request.env["omniauth.auth"]
-    Rails.logger.info "OmniAuth Info: #{auth.inspect}"
+    Rails.logger.info "OmniAuth Info: #{OmniauthLogBlueprint.render(auth)}"
 
     @user = User.from_omniauth(auth)
 
