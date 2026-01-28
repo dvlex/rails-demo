@@ -1,0 +1,7 @@
+one:
+  name: Sample task
+  completed: false
+
+two:
+  name: Another task
+  completed: true
