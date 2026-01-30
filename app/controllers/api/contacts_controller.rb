@@ -27,6 +27,7 @@ module Api
         respond_to do |format|
           if @contact.save
             format.json { render :show, status: :created, location: @contact }
+            ContactMailer.new_contact_form(@contact.email, @contact.name).deliver_now
           else
             format.json { render json: @contact.errors, status: :unprocessable_entity }
           end
