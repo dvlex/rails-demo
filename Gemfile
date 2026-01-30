@@ -78,3 +78,7 @@ gem "devise-jwt", "~> 0.13.0"
 gem "omniauth-linkedin-openid", "~> 1.0.2"
 
 gem "blueprinter", "~> 1.2.1"
+
+gem "letter_opener_web", "~> 3.0", group: :development
+
+gem "image_processing", "~> 1.14"
