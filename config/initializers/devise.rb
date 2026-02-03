@@ -277,7 +277,7 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  config.omniauth :linkedin, Rails.application.credentials.linkedIn.client_id, Rails.application.credentials.linkedIn.client_secret, scope: "openid profile email"
+  config.omniauth :linkedin, Rails.application.credentials.linkedIn&.client_id, Rails.application.credentials.linkedIn&.client_secret, scope: "openid profile email"
 
   config.jwt do |jwt|
     jwt.secret = ENV.fetch("JWT_SECRET_KEY") { Rails.application.credentials.secret_key_base }

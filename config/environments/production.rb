@@ -65,10 +65,10 @@ Rails.application.configure do
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: Rails.application.credentials.aws.ses.address,
-    port: Rails.application.credentials.aws.ses.port,
-    user_name: Rails.application.credentials.aws.ses.user_name,
-    password: Rails.application.credentials.aws.ses.password,
+    address: Rails.application.credentials.aws&.ses&.address,
+    port: Rails.application.credentials.aws&.ses&.port,
+    user_name: Rails.application.credentials.aws&.ses&.user_name,
+    password: Rails.application.credentials.aws&.ses&.password,
     authentication: :login,
     enable_starttls_auto: true
   }

@@ -2,81 +2,127 @@
 # check=error=true
 
 ARG RUBY_VERSION=3.4.5
-FROM ruby:${RUBY_VERSION}-alpine AS base
+FROM ruby:${RUBY_VERSION}-slim AS base
 
 WORKDIR /rails
 
-# Install base packages for Alpine:
-# tzdata: needed for TZInfo
+# Install base packages for runtime
 # jemalloc: memory optimization
-# gcompat: shim for glibc binaries (needed for precompiled gems/binaries)
-# libpq: PostgreSQL runtime library
-RUN apk add --no-cache \
-    gcompat \
-    jemalloc \
-    libpq \
-    tzdata
+# libvips: for Active Storage and image processing
+# postgresql-client: for database interaction
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    curl \
+    libjemalloc2 \
+    libvips \
+    postgresql-client \
+    tzdata \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
+# Set common environment variables
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
-    # Improve performance with jemalloc and YJIT \
-    LD_PRELOAD="/usr/lib/libjemalloc.so.2" \
-    MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true" \
-    RUBY_YJIT_ENABLE="1"
+    LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2" \
+    MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"
 
+# --- Build Stage (for Release) ---
 FROM base AS build
 
 # Install packages needed to build gems
-RUN apk add --no-cache \
-    build-base \
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
     git \
-    pkgconf \
-    postgresql-dev \
-    yaml-dev
+    libpq-dev \
+    libyaml-dev \
+    pkg-config
 
-# Install application gems with rigorous cleanup
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle/cache \
-    bundle install && \
+RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile && \
-    # Remove unneeded files (test files, C source files, leftovers)
-    rm -rf "${BUNDLE_PATH}"/ruby/*/gems/*/test && \
-    rm -rf "${BUNDLE_PATH}"/ruby/*/gems/*/spec && \
-    rm -rf "${BUNDLE_PATH}"/ruby/*/extensions/*/*/*.c && \
-    rm -rf "${BUNDLE_PATH}"/ruby/*/extensions/*/*/*.o
+    bundle exec bootsnap precompile --gemfile
 
-# Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
-
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
-    # Cleanup compiled assets source (optional, but saves space)
     rm -rf node_modules
 
-# Final stage for app image
-FROM base
+
+# --- Devcontainer ---
+FROM base AS devcontainer
+
+ENV RAILS_ENV="development" \
+    BUNDLE_DEPLOYMENT="0" \
+    BUNDLE_WITHOUT="" \
+    PATH="/workspaces/rails-demo/bin:$PATH"
+
+# Install dev tools
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    sudo \
+    zsh \
+    openssh-client \
+    imagemagick \
+    libyaml-dev \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+ARG DEVELOPER_UID=1000
+ARG DEVELOPER_USERNAME=vscode
+
+RUN groupadd --gid ${DEVELOPER_UID} ${DEVELOPER_USERNAME} \
+    && useradd --uid ${DEVELOPER_UID} --gid ${DEVELOPER_UID} -m -s /bin/zsh ${DEVELOPER_USERNAME} \
+    && echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${DEVELOPER_USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${DEVELOPER_USERNAME}
+
+USER ${DEVELOPER_USERNAME}
+# Install Oh My Zsh
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+RUN gem install rails
+# --- Tests ---
+FROM base AS tests
+
+ENV RAILS_ENV="test" \
+    BUNDLE_DEPLOYMENT="0" \
+    BUNDLE_WITHOUT=""
+
+# Install build dependencies + Chromium
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    chromium \
+    chromium-driver \
+    libyaml-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+COPY . .
+
+# --- Release ---
+FROM base AS release
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
-# Create a non-root user
-RUN addgroup -S -g 1000 rails && \
-    adduser -S -u 1000 -G rails -s /bin/sh rails && \
+# Run as non-root user
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 
 USER 1000:1000
 
-# Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
 CMD ["./bin/thrust", "bundle", "exec", "puma", "-C", "config/puma.rb"]
