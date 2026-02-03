@@ -27,6 +27,7 @@ class ContactsController < ApplicationController
     respond_to do |format|
       if @contact.save
         format.html { redirect_to @contact, notice: "Contact was successfully created." }
+        ContactMailer.new_contact_form(@contact.email, @contact.name).deliver_now
       else
         format.html { render :new, status: :unprocessable_entity }
       end

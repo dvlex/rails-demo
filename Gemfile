@@ -45,6 +45,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  gem "letter_opener"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
@@ -55,6 +56,8 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "solargraph", require: false
+
+  gem "simplecov", require: false
 end
 
 group :development do
@@ -77,3 +80,7 @@ gem "devise-jwt", "~> 0.13.0"
 gem "omniauth-linkedin-openid", "~> 1.0.2"
 
 gem "blueprinter", "~> 1.2.1"
+
+gem "letter_opener_web", "~> 3.0", group: :development
+
+gem "image_processing", "~> 1.14"
