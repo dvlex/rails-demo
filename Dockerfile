@@ -2,7 +2,7 @@
 # check=error=true
 
 ARG RUBY_VERSION=3.4.5
-FROM ruby:${RUBY_VERSION}-slim AS base
+FROM ruby:${RUBY_VERSION}-slim-bookworm AS base
 
 WORKDIR /rails
 
@@ -94,20 +94,36 @@ ENV RAILS_ENV="test" \
 
 # Install build dependencies + Chromium
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
+    apt-get install -y \
     build-essential \
     git \
     libpq-dev \
-    chromium \
-    chromium-driver \
+    wget \
     libyaml-dev \
     pkg-config \
+    libgbm1 \
+    libu2f-udev \
+    fonts-liberation \
+    firefox-esr \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install geckodriver
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz && \
+    tar -xzf geckodriver-v0.34.0-linux64.tar.gz && \
+    mv geckodriver /usr/local/bin/ && \
+    rm geckodriver-v0.34.0-linux64.tar.gz
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 COPY . .
+
+# Run as non-root user for Chrome to work properly
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails /rails
+
+USER 1000:1000
 
 # --- Release ---
 FROM base AS release
