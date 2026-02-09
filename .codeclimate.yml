@@ -1,0 +1,28 @@
+version: "2"         # required to adjust maintainability checks
+
+plugins:
+  brakeman:
+    enabled: true
+  eslint:
+    enabled: true
+  rubocop:
+    enabled: true
+    channel: rubocop-1-50-0
+    checks:
+      Rubocop/Metrics/MethodLength: { enabled: false }
+      Rubocop/Metrics/ParameterLists:  { enabled: false }
+      Rubocop/Metrics/PerceivedComplexity:  { enabled: false }
+
+checks:
+  method-lines:
+    config:
+      threshold: 20
+
+exclude_patterns:
+  - "config/"
+  - "db/"
+  - "script/"
+  - "**/test/"
+  - "**/vendor/"
+  - "bin/"
+  - "node_modules/"
