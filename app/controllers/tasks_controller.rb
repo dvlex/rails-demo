@@ -1,27 +1,31 @@
 class TasksController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_task, only: %i[ show edit update destroy ]
 
   # GET /tasks or /tasks.json
   def index
-    @tasks = Task.all.order(:created_at)
+    # @tasks = Task.all.order(:created_at)
+    @tasks = current_user.tasks.order(:created_at)
   end
 
   # GET /tasks/1 or /tasks/1.json
   def show
+    @task = current_user.tasks.find(params[:id])
   end
 
   # GET /tasks/new
   def new
-    @task = Task.new
+    @task = current_user.tasks.new
   end
 
   # GET /tasks/1/edit
   def edit
+    @task = current_user.tasks.find(params[:id])
   end
 
   # POST /tasks or /tasks.json
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.new(task_params)
 
     respond_to do |format|
       if @task.save
@@ -60,7 +64,7 @@ class TasksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_task
-      @task = Task.find(params.expect(:id))
+      @task = current_user.tasks.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.

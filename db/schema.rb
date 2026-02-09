@@ -10,52 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_28_172647) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_09_231209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "contacts", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.integer "reason"
-    t.string "phone"
-    t.text "message"
     t.datetime "created_at", null: false
+    t.string "email"
+    t.text "message"
+    t.string "name"
+    t.string "phone"
+    t.integer "reason"
     t.datetime "updated_at", null: false
   end
 
   create_table "demos", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "tasks", force: :cascade do |t|
-    t.string "name"
     t.boolean "completed"
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "provider"
-    t.string "uid"
-    t.string "jti"
     t.string "first_name"
-    t.string "title"
-    t.string "location"
-    t.string "linkedin_url"
-    t.string "photo_url"
+    t.string "jti"
     t.string "last_name"
+    t.string "linkedin_url"
+    t.string "location"
+    t.string "photo_url"
+    t.string "provider"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.integer "role", default: 0
+    t.string "title"
+    t.string "uid"
+    t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "tasks", "users"
 end

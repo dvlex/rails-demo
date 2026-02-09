@@ -1,5 +1,6 @@
 class ContactsController < ApplicationController
   before_action :authenticate_user!
+  before_action :require_admin
   before_action :set_contact, only: %i[ show edit update destroy ]
 
   # GET /contacts or /contacts.json
@@ -63,5 +64,11 @@ class ContactsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def contact_params
       params.expect(contact: [ :name, :email, :reason, :phone, :message ])
+    end
+
+    def require_admin
+      unless current_user.admin?
+        redirect_to root_path, alert: "You are not authorized to access this section"
+      end
     end
 end
