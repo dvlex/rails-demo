@@ -42,3 +42,4 @@
 # Ignore test coverage report
 /coverage/
 
+/reactapp

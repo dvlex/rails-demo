@@ -6,6 +6,20 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     @user = User.from_omniauth(auth)
 
     if @user.persisted?
+      # Check if the request comes from the React App
+      # OmniAuth stores the params from the request phase in request.env['omniauth.params']
+      origin = request.env["omniauth.params"]&.fetch("origin", nil)
+
+      if origin == "react"
+        # Generate JWT token for React App
+        token, _payload = Warden::JWTAuth::UserEncoder.new.call(@user, :user, nil)
+
+        # Redirect to React frontend with the token
+        frontend_url = "http://localhost:5173/auth/callback"
+        redirect_to "#{frontend_url}?token=#{token}", allow_other_host: true
+        return
+      end
+
       sign_in_and_redirect @user, event: :authentication
       set_flash_message(:notice, :success, kind: "LinkedIn") if is_navigational_format?
     else
