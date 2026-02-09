@@ -61,8 +61,8 @@ jobs:
         env:
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
-          docker-compose build tests
-          docker-compose up --abort-on-container-exit --exit-code-from tests tests
+          docker compose build tests
+          docker compose up --abort-on-container-exit --exit-code-from tests tests
 
   build:
     needs: test
