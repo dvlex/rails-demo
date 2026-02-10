@@ -84,3 +84,5 @@ gem "blueprinter", "~> 1.2.1"
 gem "letter_opener_web", "~> 3.0", group: :development
 
 gem "image_processing", "~> 1.14"
+
+gem "statesman", "~> 13.1"

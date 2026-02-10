@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_231209) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_173003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "contact_states", force: :cascade do |t|
+    t.integer "contact_id", null: false
+    t.datetime "created_at", null: false
+    t.string "from_state", null: false
+    t.jsonb "metadata", default: {}
+    t.boolean "most_recent", null: false
+    t.integer "sort_key", null: false
+    t.string "to_state", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id", "most_recent"], name: "index_contact_states_parent_most_recent", unique: true, where: "most_recent"
+    t.index ["contact_id", "sort_key"], name: "index_contact_states_parent_sort", unique: true
+  end
 
   create_table "contacts", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -21,6 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_231209) do
     t.string "name"
     t.string "phone"
     t.integer "reason"
+    t.string "status"
     t.datetime "updated_at", null: false
   end
 
@@ -62,5 +76,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_231209) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "contact_states", "contacts"
   add_foreign_key "tasks", "users"
 end
