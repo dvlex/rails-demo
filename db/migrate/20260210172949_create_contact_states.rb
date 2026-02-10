@@ -18,11 +18,11 @@ class CreateContactStates < ActiveRecord::Migration[8.1]
     add_foreign_key :contact_states, :contacts
 
     add_index(:contact_states,
-              %i(contact_id sort_key),
+              %i[contact_id sort_key],
               unique: true,
               name: "index_contact_states_parent_sort")
     add_index(:contact_states,
-              %i(contact_id most_recent),
+              %i[contact_id most_recent],
               unique: true,
               where: "most_recent",
               name: "index_contact_states_parent_most_recent")
