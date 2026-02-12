@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   # Rutas API (JSON)
   namespace :api, defaults: { format: :json } do
     resources :contacts
+    resources :tasks, only: [ :index ]
     get "test", to: "test#index"
     get "user", to: "users#show"
 

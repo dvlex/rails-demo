@@ -2,6 +2,8 @@ require "test_helper"
 
 class TasksControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
+    sign_in @user
     @task = tasks(:one)
   end
 
@@ -17,7 +19,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
   test "should create task" do
     assert_difference("Task.count") do
-      post tasks_url, params: { task: { completed: @task.completed, name: @task.name } }
+      post tasks_url, params: { task: { completed: @task.completed, name: @task.name, user_id: @task.user_id } }
     end
 
     assert_redirected_to tasks_url
@@ -34,7 +36,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update task" do
-    patch task_url(@task), params: { task: { completed: @task.completed, name: @task.name } }
+    patch task_url(@task), params: { task: { completed: @task.completed, name: @task.name, user_id: @task.user_id } }
     assert_redirected_to tasks_url
   end
 

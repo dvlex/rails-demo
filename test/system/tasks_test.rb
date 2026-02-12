@@ -2,12 +2,14 @@ require "application_system_test_case"
 
 class TasksTest < ApplicationSystemTestCase
   setup do
+    @user = users(:one)
+    sign_in @user
     @task = tasks(:one)
   end
 
   test "visiting the index" do
     visit tasks_url
-    assert_selector "h1", text: "To Do"
+    assert_selector "h1", text: "One tasks:"
   end
 
   test "should create task" do
@@ -19,7 +21,7 @@ class TasksTest < ApplicationSystemTestCase
     click_on "Create Task"
 
     assert_text "Task was successfully created"
-    assert_selector "h1", text: "To Do"
+    assert_selector "h1", text: "One tasks:"
   end
 
   test "should update Task" do
@@ -31,7 +33,7 @@ class TasksTest < ApplicationSystemTestCase
     click_on "Update Task"
 
     assert_text "Task was successfully updated"
-    assert_selector "h1", text: "To Do"
+    assert_selector "h1", text: "One tasks:"
   end
 
   test "should destroy Task" do
