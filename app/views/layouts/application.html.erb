@@ -26,14 +26,21 @@
   <body class="grid grid-rows-[auto_1fr] h-screen overflow-hidden bg-gray-50">
     <nav class="bg-white shadow-sm border-b border-gray-200">
       <div class="container mx-auto px-5 py-4 flex justify-between items-center">
-        <%= link_to "Lexdrel", root_path, class: "text-xl font-bold text-gray-900" %>
+        <%= link_to root_path, class: "flex items-center h-8" do %>
+          <%= image_tag "navbar_icon.svg", class: "h-8 w-auto" %>
+        <% end %>
 
         <div class="flex items-center gap-4">
           <% if user_signed_in? %>
             <span class="text-gray-600"><%= current_user.first_name %></span>
-            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition duration-150" %>
+            <%= button_to destroy_user_session_path, method: :delete, class: "bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-2 rounded transition duration-150" do %>
+              <%= image_tag "logout_icon.svg", class: "h-4 w-auto" %>
+            <% end %>
           <% else %>
-            <%= link_to "Sign in", new_user_session_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded transition duration-150" %>
+            <%= link_to user_linkedin_omniauth_authorize_path, class: "bg-[#0276b1] hover:bg-[#0266a1] text-white font-medium py-2 px-4 rounded transition duration-150 flex items-center" do %>
+              <span>Log</span>
+              <%= image_tag "linkedin_icon.svg", class: "h-4 w-auto ps-1" %>
+            <% end %>
           <% end %>
         </div>
       </div>
